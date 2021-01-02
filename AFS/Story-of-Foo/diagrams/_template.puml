@@ -1,0 +1,52 @@
+@startuml
+<style>
+title  {
+    FontSize 24
+}
+</style>
+skinparam actorStyle awesome
+skinparam component {
+    BackgroundColor<<web>> #LightGrey
+    BackgroundColor<<service>> #LightGrey
+}
+'←→
+
+title Template
+actor client
+rectangle "ACME Financial System" {
+    component SPA <<browser>>
+    component "Backend Systems" as backend <<system>>
+    interface "HTTP\n→SID" as m_http
+    interface "HTTP\n→SID" as c_http
+    interface "XML-RPC\n→ID" as connector
+    client -> SPA
+    SPA --> m_http
+    SPA ..> c_http #Grey
+    connector -- backend
+
+    rectangle monolith #LightGrey {
+        component MonolithOld as m_old <<web>><<api>>
+        component MonolithNew as m_new <<api>>
+        database SessionEngine <<IdStore>><<SessionStore>>
+        interface SessionEngineProtocol as sep
+
+        m_http -- m_old
+        m_http -- m_new
+        sep -- SessionEngine
+        m_old --> sep
+        m_new --> sep
+        m_old --> connector
+        m_new --> connector
+    }
+
+    cloud cloud #LightCyan {
+        component foo <<service>>
+        component bar <<service>>
+
+        c_http .. foo #Grey
+        c_http .. bar #Grey
+        foo ..> connector #Grey
+        bar ..> connector #Grey
+    }
+}
+@enduml

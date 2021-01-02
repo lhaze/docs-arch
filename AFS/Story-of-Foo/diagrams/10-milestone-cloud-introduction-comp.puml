@@ -1,0 +1,54 @@
+@startuml
+skinparam actorStyle awesome
+skinparam linetype polyline
+skinparam component {
+    Style rectangle
+    BackgroundColor<<web>> #LightGrey
+    BackgroundColor<<service>> #LightGrey
+    BackgroundColor<<system>> #LightGrey
+}
+'←→
+
+title Milestone: Cloud Introduction
+actor client
+rectangle "ACME Front System" {
+    component SPA <<browser>>
+    interface "[HTTPS]\napi\n→SID" as m_api
+    interface "[HTTPS]\n  web" as m_web
+    interface "[HTTPS]\napi\n→SID" as c_http
+    interface "XML-RPC\n→ID" as connector
+    client --> SPA
+    client --> m_web
+    SPA --> m_api
+    SPA ..> c_http #Grey
+
+    rectangle monolith #LightGrey {
+        component MonolithOld as m_old <<web>><<api>>
+        component MonolithNew as m_new <<api>>
+        database SessionEngine <<IdStore>><<SessionStore>>
+        interface "proprietary\n→SID" as sep
+
+        m_api -- m_old
+        m_web -- m_old
+        m_api -- m_new
+        sep -- SessionEngine
+        m_old --> sep
+        m_new --> sep
+        m_old --> connector
+        m_new --> connector
+    }
+
+    cloud cloud #LightCyan {
+        component foo <<service>>
+        component bar <<service>>
+
+        c_http .. foo #Grey
+        c_http .. bar #Grey
+        foo ..> connector #Grey
+        bar ..> connector #Grey
+    }
+}
+
+component "ACME Backend Systems" as backend <<system>>
+connector --- backend
+@enduml

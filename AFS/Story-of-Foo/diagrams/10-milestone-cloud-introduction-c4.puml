@@ -1,0 +1,36 @@
+@startuml Milestone: cloud introduction (C4)
+!include ../../vendor/C4-PlantUML/C4_Container.puml
+!include ../../vendor/devicons-PlantUML/express_original.puml
+!include ../../vendor/devicons-PlantUML/python.puml
+!include ../../vendor/devicons-PlantUML/react.puml
+!include ../../vendor/FontAwsome-PlantUML/users.puml
+!include ../../vendor/FontAwsome-PlantUML/box.puml
+
+Person(client, "Client", "People that use financial services", "users")
+System_Ext(backend, "ACME Backend Systems", "ddd", "box")
+
+System_Boundary(afs, "ACME Front System") {
+    Container(spa, "SPA", "browser, JS, React", "The main interface that the customer interacts with", "react")
+    Container(m_old, "MonolithOld", "Python", "Handles a set of business processes", "python")
+    Container(m_new, "MonolithNew", "Python", "Handles a set of business processes", "python")
+    ContainerDb(session_engine, "SessionEngine", "proprietary", "Holds process data ", "box")
+    Rel(client, m_old, "fetches SPA", "https")
+    Rel(client, spa, "uses")
+    Rel(spa, m_old, "uses API", "https")
+    Rel(spa, m_new, "uses API", "https")
+    Rel(m_old, session_engine, "reads/writes", "proprietary")
+    Rel(m_new, session_engine, "reads/writes", "proprietary")
+    Rel(m_old, backend, "queries/commands", "XML-RPC")
+    Rel(m_new, backend, "queries/commands", "XML-RPC")
+}
+System_Boundary(acs, "ACME Cloud") {
+    Container(c_foo, "FooService", "Python", "Handles a set of business processes", "python")
+    Container(c_bar, "BarService", "nodejs, Express", "Handles a set of business processes", "express_original")
+    Container(c_connector, "ConnectorService", "Python", "Handles a set of business processes", "python")
+    Rel(spa, c_foo, "uses API", "https")
+    Rel(spa, c_bar, "uses API", "https")
+    Rel(c_foo, c_connector, "uses API", "JSON-RPC")
+    Rel(c_bar, c_connector, "uses API", "JSON-RPC")
+    Rel(c_connector, backend, "uses API", "XML-RPC")
+}
+@enduml
