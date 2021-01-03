@@ -1,4 +1,4 @@
-@startuml Milestone: cloud introduction (C4)
+@startuml 10-milestone-introduction_of_the_cloud_C4
 !include ../../vendor/C4-PlantUML/C4_Container.puml
 !include ../../vendor/devicons-PlantUML/express_original.puml
 !include ../../vendor/devicons-PlantUML/python.puml
