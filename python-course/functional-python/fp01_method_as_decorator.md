@@ -2,13 +2,21 @@
 
 This series of articles shows a natural example of using higher-order functions in Python. We won't stop at building a parametrized decorator, as most of the examples on the web do. Instead, we will move on step by step away from procedural and object programming. Exploring common problems of development, we will solve them using features of functional programming in Python.
 
+- [Part 1. Higher-Order Functions: Method as a Decorator](#part-1-higher-order-functions-method-as-a-decorator)
+  - [The Task](#the-task)
+  - [The Context](#the-context)
+  - [Requirement: Caching Decorator](#requirement-caching-decorator)
+  - [Conclusions](#conclusions)
+
+[Next: Higher-Order Functions: Method as a Decorator Factory ⇨](fp02_method_as_decorator_factory.md)
+
 # Part 1. Higher-Order Functions: Method as a Decorator
 
-Let's start small and not so far away from OOP. Most of the beginners in programming are taught Object-Oriented Programming right at the start of their education. Hence, we will start from something that is quite commonly.
+Let's start small and not so far away from OOP. Most of the beginners in programming are taught Object-Oriented Programming right at the start of their education. Hence, we will start from something quite common.
 
 ## The Task
 
-Let's imagine, we join a new project with much of a "framework" code to write. Our first task, we are expected to have the cache API as an object with some easy to use methods. Of course, there are many awesome caching libraries at the [PyPI](https://pypi.org/search/?q=caching) but, hey, the situation is all set-up for us to learn while writing code.
+Let's imagine, we join a new project with much of a "framework" code to write. In our first task, we are expected to have the cache API as an object with some easy to use methods. Of course, there are many awesome caching libraries at the [PyPI](https://pypi.org/search/?q=caching) but, hey, the situation is all set-up for us to learn while writing code.
 
 > NB: In real developer practice, always look for an opportunity to evaluate existing solutions first, before deciding to write your own. [*Not Invented Here*](https://en.wikipedia.org/wiki/Not_invented_here) sickness might be a serious condition for a programmer.
 
@@ -37,7 +45,7 @@ def foo(*some_args, **some_kwargs): ...
 
 ## The Context
 
-Imagine there's a function that we consider expensive, with some kind of computations, networking, or other optimization involved. We need to remember its outcomes for some time, aka. cache it. The value might become obsolete at some point of the time, which will require executing the function again.
+Imagine there's a function that we consider expensive, with some kind of computations, networking, or other optimization involved. We need to remember its outcomes for some time, aka. cache it. The value might become obsolete at some point of time, which will require executing the function again.
 
 ```python
 def expensive_function(*some_args, **some_kwargs): ...
@@ -76,7 +84,7 @@ class CallParams:
     kwargs: t.Dict[str, t.Any]
 ```
 
-## 1. Requirement: Caching Decorator
+## Requirement: Caching Decorator
 
 Let's get down to the task. Using previous definitions, we'll write a method that will work as a caching decorator.
 
@@ -99,15 +107,15 @@ class Cache:
 
 So... let's use this new method.
 
-> NB: here we annotate different fragments of code with "*time*" of their execution: *configuration*-time, *import*-time and *usage*-time. For now, it has no meaning for us, but later on we'll see some problems that might take place here.
+> NB: here we annotate different fragments of code with "*time*" of their execution: *configuration*-time, *import*-time, and *usage*-time. For now, it has no meaning for us, but later on we'll see some problems that might take place here.
 
 ```python
 # configuration-time
 cache = Cache()
 
 # import-time
-@cache.cached  # (6)
-def expensive_function(some_context, *args, **kwargs):
+@cache.cache_function_decorator  # (6)
+def expensive_function(*some_args, **some_kwargs):
     """My docstring."""
 
 # usage-time
@@ -135,3 +143,11 @@ But how this all works? Why `f` and `self` are defined in the scope of the `wrap
 There is one more thing worth noticing. Although `cache_function_decorator` returns a new function, created inside of it `(5)`, this function identifies exactly the same as the original one `(7)`. This is the case because of the helper `functools.wraps` decorator `(1)`. It copies metadata of a function onto another one (its decorator, in this case). For now, this quite common feature is purely cosmetic, but later we'll see it important to the mechanics of our caching.
 
 > NB: `functools.wraps` is a visible example from the standard library of Python where a decorator is used to enrich a function or modify its behavior in a functional programming way.
+
+## Conclusions
+
+We have written a simple caching feature using functional programming in Python and a *decorator* idiom and its syntax.
+
+If you want to see how this works in practice, take a look at our [working and tested example](fp01_method_as_decorator.py).
+
+[Next: Higher-Order Functions: Method as a Decorator Factory ⇨](fp02_method_as_decorator_factory.md)
