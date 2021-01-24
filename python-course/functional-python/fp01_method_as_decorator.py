@@ -11,7 +11,7 @@ NotSet = mock.sentinel.NotSet
 
 
 @dataclasses.dataclass(frozen=True)
-class Call:
+class CallArgs:
     args: t.Tuple
     kwargs: t.Dict[str, t.Any]
 
@@ -31,7 +31,7 @@ class Cache(t.Generic[Value]):
 
     _engine: CacheEngine
 
-    def build_key(self, call: Call) -> Key:
+    def build_key(self, call: CallArgs) -> Key:
         """
         This method knows how to create a key (some kind of `str`) from
         any call parameters.
@@ -41,7 +41,7 @@ class Cache(t.Generic[Value]):
     def cache_function_decorator(self, f: Function) -> Function:
         @functools.wraps(f)  # (1)
         def wrapper(*args, **kwargs) -> Value:  # (2)
-            key = self.build_key(Call(args, kwargs))
+            key = self.build_key(CallArgs(args, kwargs))
             if value_from_cache := self._engine.load(key) is not NotSet:  # (3)
                 return value_from_cache
             value = f(*args, **kwargs)  # (4)
@@ -97,7 +97,7 @@ def cache(cache_engine):
 def test_build_key(cache):
     args = ()
     kwargs = {}
-    assert cache.build_key(Call(args, kwargs)) == "Call(args=(), kwargs={})"
+    assert cache.build_key(CallArgs(args, kwargs)) == "CallArgs(args=(), kwargs={})"
 
 
 def test_decorated_function_identity(cache):
@@ -118,8 +118,8 @@ def test_cache_function_decorator(cache: Cache[str], cache_engine: mock.Mock, ca
     foo("bar")
     foo("bar")
     assert cache_engine.load.call_args_list == [
-        mock.call("Call(args=('bar',), kwargs={})"),
-        mock.call("Call(args=('bar',), kwargs={})"),
+        mock.call("CallArgs(args=('bar',), kwargs={})"),
+        mock.call("CallArgs(args=('bar',), kwargs={})"),
     ]
-    cache_engine.store.assert_called_once_with("Call(args=('bar',), kwargs={})", "result")
-    assert cache_memory["Call(args=('bar',), kwargs={})"] == "result"
+    cache_engine.store.assert_called_once_with("CallArgs(args=('bar',), kwargs={})", "result")
+    assert cache_memory["CallArgs(args=('bar',), kwargs={})"] == "result"

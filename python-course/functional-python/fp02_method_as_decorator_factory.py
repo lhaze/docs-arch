@@ -7,7 +7,7 @@ from fp01_method_as_decorator import (
     Cache as FP01Cache,
     cache_engine,
     cache_memory,
-    Call,
+    CallArgs,
     Function,
     NotSet,
     Value,
@@ -21,7 +21,7 @@ class Cache(FP01Cache, t.Generic[Value]):
         def cached_function(f: Function) -> Function:
             @functools.wraps(f)
             def wrapper(*args, **kwargs) -> Value:
-                key = self.build_key(Call(args, kwargs))
+                key = self.build_key(CallArgs(args, kwargs))
                 if value_from_cache := self._engine.load(key) is not NotSet:
                     return value_from_cache
                 value = f(*args, **kwargs)
@@ -71,11 +71,11 @@ def test_cache_function_decorator_with_params(cache: Cache[str], cache_engine: m
     foo("bar")
     foo("bar")
     assert cache_engine.load.call_args_list == [
-        mock.call("Call(args=('bar',), kwargs={})"),
-        mock.call("Call(args=('bar',), kwargs={})"),
+        mock.call("CallArgs(args=('bar',), kwargs={})"),
+        mock.call("CallArgs(args=('bar',), kwargs={})"),
     ]
-    cache_engine.store.assert_called_once_with("Call(args=('bar',), kwargs={})", "result", expire=10)
-    assert cache_memory["Call(args=('bar',), kwargs={})"] == "result"
+    cache_engine.store.assert_called_once_with("CallArgs(args=('bar',), kwargs={})", "result", expire=10)
+    assert cache_memory["CallArgs(args=('bar',), kwargs={})"] == "result"
 
 
 def test_cache_function_decorator_without_params(cache: Cache[str], cache_engine: mock.Mock, cache_memory: dict):
@@ -86,8 +86,8 @@ def test_cache_function_decorator_without_params(cache: Cache[str], cache_engine
     foo("bar")
     foo("bar")
     assert cache_engine.load.call_args_list == [
-        mock.call("Call(args=('bar',), kwargs={})"),
-        mock.call("Call(args=('bar',), kwargs={})"),
+        mock.call("CallArgs(args=('bar',), kwargs={})"),
+        mock.call("CallArgs(args=('bar',), kwargs={})"),
     ]
-    cache_engine.store.assert_called_once_with("Call(args=('bar',), kwargs={})", "result", expire=None)
-    assert cache_memory["Call(args=('bar',), kwargs={})"] == "result"
+    cache_engine.store.assert_called_once_with("CallArgs(args=('bar',), kwargs={})", "result", expire=None)
+    assert cache_memory["CallArgs(args=('bar',), kwargs={})"] == "result"

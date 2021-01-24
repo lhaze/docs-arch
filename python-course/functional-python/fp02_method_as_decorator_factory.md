@@ -11,35 +11,26 @@ This series of articles shows a natural example of using higher-order functions 
 
 [⇦ Previous: Higher-Order Functions: Method as a Decorator](fp01_method_as_decorator.md)
 
-[Next: ⇨]()
+[Next: Higher-Order Functions: Composing decorators ⇨](fp03_composing_decorators.md)
 
 # Part 2. Higher-Order Functions: Method as a Decorator Factory
 
-We will start from the place where we left.
-
 ## The Context
 
-We have a class that
+We will pick up where we left off last time. We have a class that successfully caches function calls in a very simple way. Though, the cache stays remembered as long as the engine keeps it.
 
 ```python
 class Cache:
-    """
-    This class should know how to cache things.
-    """
 
     _engine: CacheEngine
 
-    def build_key(self, call: Call) -> Key:
-        """
-        This method knows how to create a key (some kind of `str`) from
-        any call parameters.
-        """
+    def build_key(self, call: CallArgs) -> Key:
         ...
 
     def cache_function_decorator(self, f: Function) -> Function:
         @functools.wraps(f)
         def wrapper(*args, **kwargs) -> Value:
-            key = self.build_key(Call(args, kwargs))
+            key = self.build_key(CallArgs(args, kwargs))
             if value_from_cache := self._engine.load(key) is not NotSet:
                 return value_from_cache
             value = f(*args, **kwargs)
@@ -61,11 +52,11 @@ class Cache:
 
     def cache_function_decorator(
         self, expire: int = None  # (1)
-    ) -> t.Callable[[Function], Function]:  # (2)
+    ) -> Callable[[Function], Function]:  # (2)
         def cached_function(f: Function) -> Function:
             @functools.wraps(f)
             def wrapper(*args, **kwargs) -> Value:
-                key = self.build_key(Call(args, kwargs))
+                key = self.build_key(CallArgs(args, kwargs))
                 if value_from_cache := self._engine.load(key) is not NotSet:
                     return value_from_cache
                 value = f(*args, **kwargs)
@@ -78,7 +69,7 @@ class Cache:
 That wasn't so hard, right? The same technique of building a function as a closure but taken one step higher. The new `cache_function_decorator` has the following signature:
 
 ```python
-(self: Cache, expire: int) -> t.Callable[[Function], Function]
+(self: Cache, expire: int) -> Callable[[Function], Function]
 ```
 
 and should be used in this way:
@@ -115,12 +106,12 @@ class Cache:
     ...
 
     def cache_function_decorator(
-        self, f: t.Optional[Function] = None, *, expire: int = None  # (1)
-    ) -> t.Union[Function, t.Callable[[Function], Function]]:  # (5)
+        self, f: Optional[Function] = None, *, expire: int = None  # (1)
+    ) -> Union[Function, Callable[[Function], Function]]:  # (5)
         def cached_function(f: Function) -> Function:
             @functools.wraps(f)
             def wrapper(*args, **kwargs) -> Value:
-                key = self.build_key(Call(args, kwargs))
+                key = self.build_key(CallArgs(args, kwargs))
                 if value_from_cache := self._engine.load(key) is not NotSet:
                     return value_from_cache
                 value = f(*args, **kwargs)
@@ -135,10 +126,10 @@ class Cache:
             return cached_function(f)
 ```
 
-The conditioning `(6)` on the factory-method-level makes the method choose between having `f` as the main argument or not having. Unfortunately, this makes the signature of the method more complex `(5)`: either you get the decorator or you get the actual wrapper. And that's not coincidental; this is the actual backward compatibility.
+The conditioning `(6)` on the factory-method-level makes the method choose between having `f` as the main argument or not having. Unfortunately, this makes the signature of the method more complex `(5)`: either you get the decorator or you get the actual wrapper. Right now, the decorator is both the 2nd and the 3rd order function. And that's not coincidental; this is the actual backward compatibility.
 
 ```python
-(self: Cache, expire: int) -> t.Union[Function, t.Callable[[Function], Function]]
+(self: Cache, expire: int) -> Union[Function, Callable[[Function], Function]]
 ```
 
 > NB: Notice that the argument `expire` has become [*keyword-only*](https://www.python.org/dev/peps/pep-3102/) `(1)`. This way you defend against a simple yet fatal mistake of passing wrong arguments positionally.
@@ -165,10 +156,11 @@ def another_expensive_function(*some_args, **some_kwargs): ...
 >```
 
 #
+
 ## Conclusions
 
-We have written a simple caching feature using functional programming in Python and a *decorator* idiom and its syntax.
+We have enhanced the caching feature to accept some kind of parametrization, making its method the 3rd order function.
 
 If you want to see how this works in practice, take a look at our [working and tested example](fp02_method_as_decorator_factory.py).
 
-[Next: ⇨]()
+[Next: Higher-Order Functions: Composing decorators ⇨](fp03_composing_decorators.md)

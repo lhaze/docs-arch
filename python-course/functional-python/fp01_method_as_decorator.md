@@ -29,7 +29,7 @@ class Cache:
     """
     _engine: CacheEngine
 
-    def build_key(self, params: CallParams) -> Key:
+    def build_key(self, params: CallArgs) -> Key:
         """
         This method knows how to create a key (some kind of `str`) from
         any call parameters.
@@ -79,9 +79,9 @@ NotSet = unittest.mock.sentinel.NotSet
 
 # An abstraction for params of a function call
 @dataclasses.dataclass(frozen=True)
-class CallParams:
-    args: t.Tuple
-    kwargs: t.Dict[str, t.Any]
+class CallArgs:
+    args: Tuple
+    kwargs: Dict[str, Any]
 ```
 
 ## Requirement: Caching Decorator
@@ -140,7 +140,7 @@ expensive_function = cache.cached(expensive_function)
 
 But how this all works? Why `f` and `self` are defined in the scope of the `wrapper` `(4)`? Well, `wrapper` is called a [*closure*](https://en.wikipedia.org/wiki/Closure_(computer_programming)) with respect to `cache_function_decorator`, because it uses names from the scope of the function in which it was declared for. Python interpreter implicitly passes all names with their runtime values from the `cache_function_decorator` to the `wrapper`. We'll see much more use of this mechanism further on.
 
-There is one more thing worth noticing. Although `cache_function_decorator` returns a new function, created inside of it `(5)`, this function identifies exactly the same as the original one `(7)`. This is the case because of the helper `functools.wraps` decorator `(1)`. It copies metadata of a function onto another one (its decorator, in this case). For now, this quite common feature is purely cosmetic, but later we'll see it important to the mechanics of our caching.
+There is one more thing worth noticing. Although `cache_function_decorator` returns a new function, created inside of it `(5)`, this function identifies exactly the same as the original one `(7)`. This is the case because of the helper `functools.wraps` decorator `(1)`. It copies metadata (like the name or the docstring) of a function onto another one (its decorator, in this case). For now, this quite common feature is purely cosmetic, but later we'll see it important to the mechanics of our caching.
 
 > NB: `functools.wraps` is a visible example from the standard library of Python where a decorator is used to enrich a function or modify its behavior in a functional programming way.
 
