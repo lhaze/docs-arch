@@ -1,9 +1,9 @@
 import functools
 import pytest
-import typing as t
+from typing import *
 from unittest import mock
 
-from fp01_method_as_decorator import (
+from .fp01_method_as_decorator import (
     Cache as FP01Cache,
     cache_engine,
     cache_memory,
@@ -14,10 +14,10 @@ from fp01_method_as_decorator import (
 )
 
 
-class Cache(FP01Cache, t.Generic[Value]):
+class Cache(FP01Cache, Generic[Value]):
     def cache_function_decorator(
-        self, f: t.Optional[Function] = None, *, expire: int = None  # (1)
-    ) -> t.Callable[[Function], Function]:  # (2)
+        self, f: Optional[Function] = None, *, expire: int = None  # (1)
+    ) -> Callable[[Function], Function]:  # (2)
         def cached_function(f: Function) -> Function:
             @functools.wraps(f)
             def wrapper(*args, **kwargs) -> Value:

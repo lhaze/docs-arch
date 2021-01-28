@@ -1,6 +1,6 @@
-### Functional Python
+### Functional Python by Examples
 
-This series of articles shows a natural example of using higher-order functions in Python. We won't stop at building a parametrized decorator, as most of the examples on the web do. Instead, we will move on step by step away from procedural and object programming. Exploring common problems of development, we will solve them using features of functional programming in Python.
+This series of articles shows plain examples of using functional programming in Python. We won't stop at building a parametrized decorator, as most of the examples on the web do. Instead, we will move on step by step away from procedural and object programming. Exploring common problems of development, we will solve them using features of functional syntax in Python.
 
 - [Part 2. Higher-Order Functions: Method as a Decorator Factory](#part-2-higher-order-functions-method-as-a-decorator-factory)
   - [The Context](#the-context)
@@ -11,7 +11,7 @@ This series of articles shows a natural example of using higher-order functions 
 
 [⇦ Previous: Higher-Order Functions: Method as a Decorator](fp01_method_as_decorator.md)
 
-[Next: Higher-Order Functions: Composing decorators ⇨](fp03_composing_decorators.md)
+[Next: Higher-Order Functions: Modifying Signatures ⇨](fp03_modifying_signatures.md)
 
 # Part 2. Higher-Order Functions: Method as a Decorator Factory
 
@@ -83,11 +83,11 @@ def expensive_function(*some_args, **some_kwargs): ...
 def another_expensive_function(*some_args, **some_kwargs): ...
 ```
 
-Now, the method takes arguments `(3)` and returns the actual decorator. Wait a minute, it's not a decorator anymore! It's a decorator *factory method*, which makes it the 3rd order function.
+Now, the method takes arguments `(3)` and returns the actual decorator. Wait a minute! It's not a decorator anymore! It's a decorator *factory method*, which makes it the 3rd order function.
 
 ## Requirement: Backward Compatibility
 
-You feel quite happy with the easiness of the change, but a while later another team member sends a rancorous message about you breaking his code in a dependant project. Yes, you did by making this modification. Have you noticed that the change in the signature made the usage a bit different?
+You feel quite happy with the easiness of the change, but a while later Dave, fellow member of another team, sends a rancorous message about you breaking his code in a dependant project. Yes, you did by making this modification. Have you noticed that the change in the signature made the usage a bit different?
 
 ```python
 # before
@@ -126,13 +126,13 @@ class Cache:
             return cached_function(f)
 ```
 
-The conditioning `(6)` on the factory-method-level makes the method choose between having `f` as the main argument or not having. Unfortunately, this makes the signature of the method more complex `(5)`: either you get the decorator or you get the actual wrapper. Right now, the decorator is both the 2nd and the 3rd order function. And that's not coincidental; this is the actual backward compatibility.
+The conditioning `(6)` on the factory-method-level makes the method choose between having `f` as the main argument or not having. Unfortunately, this makes the signature of the method more complex `(5)`: either you get the decorator, or you get the actual wrapper. Right now, the decorator is both the 2nd and the 3rd order function. And that's not coincidental; this is the actual backward compatibility.
 
 ```python
 (self: Cache, expire: int) -> Union[Function, Callable[[Function], Function]]
 ```
 
-> NB: Notice that the argument `expire` has become [*keyword-only*](https://www.python.org/dev/peps/pep-3102/) `(1)`. This way you defend against a simple yet fatal mistake of passing wrong arguments positionally.
+> NB: Notice that the argument `expire` has become [*keyword-only*](https://www.python.org/dev/peps/pep-3102/) `(1)`. This way, you defend against a simple yet fatal mistake of passing wrong arguments positionally.
 
 Now you can do both of syntaxes and keep backward compatibility:
 
@@ -155,12 +155,10 @@ def another_expensive_function(*some_args, **some_kwargs): ...
 >def fixture_with_params(): ...
 >```
 
-#
-
 ## Conclusions
 
-We have enhanced the caching feature to accept some kind of parametrization, making its method the 3rd order function.
+We have enhanced the caching feature to accept a kind of parametrization, making its method the 3rd order function.
 
 If you want to see how this works in practice, take a look at our [working and tested example](fp02_method_as_decorator_factory.py).
 
-[Next: Higher-Order Functions: Composing decorators ⇨](fp03_composing_decorators.md)
+[Next: Higher-Order Functions: Modifying Signatures ⇨](fp03_modifying_signatures.md)

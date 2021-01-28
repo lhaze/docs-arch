@@ -1,6 +1,6 @@
-### Functional Python
+### Functional Python by Examples
 
-This series of articles shows a natural example of using higher-order functions in Python. We won't stop at building a parametrized decorator, as most of the examples on the web do. Instead, we will move on step by step away from procedural and object programming. Exploring common problems of development, we will solve them using features of functional programming in Python.
+This series of articles shows plain examples of using functional programming in Python. We won't stop at building a parametrized decorator, as most of the examples on the web do. Instead, we will move on step by step away from procedural and object programming. Exploring common problems of development, we will solve them using features of functional syntax in Python.
 
 - [Part 1. Higher-Order Functions: Method as a Decorator](#part-1-higher-order-functions-method-as-a-decorator)
   - [The Task](#the-task)

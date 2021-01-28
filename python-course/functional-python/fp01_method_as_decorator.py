@@ -1,22 +1,22 @@
 import dataclasses
 import functools
 import pytest
-import typing as t
+from typing import *
 from unittest import mock
 
-Key = t.NewType("Key", str)
-Value = t.TypeVar("Value")
-Function = t.Callable[..., Value]
+Key = NewType("Key", str)
+Value = TypeVar("Value")
+Function = Callable[..., Value]
 NotSet = mock.sentinel.NotSet
 
 
 @dataclasses.dataclass(frozen=True)
 class CallArgs:
-    args: t.Tuple
-    kwargs: t.Dict[str, t.Any]
+    args: Tuple
+    kwargs: Dict[str, Any]
 
 
-class CacheEngine(t.Generic[Value]):
+class CacheEngine(Generic[Value]):
     def load(self, key: Key) -> Value:
         ...
 
@@ -24,7 +24,7 @@ class CacheEngine(t.Generic[Value]):
         ...
 
 
-class Cache(t.Generic[Value]):
+class Cache(Generic[Value]):
     """
     This class should know how to cache things.
     """
