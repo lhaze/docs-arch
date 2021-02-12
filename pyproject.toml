@@ -10,6 +10,7 @@ black = "^20.8b1"
 flake8 = "^3.8.4"
 pdbpp = "^0.10.2"
 freezegun = "^1.1.0"
+ipython = "^7.19.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "async"
