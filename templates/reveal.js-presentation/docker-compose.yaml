@@ -1,0 +1,25 @@
+version: "3.9"
+services:
+  dev:
+    image: "cloudogu/reveal.js:dev"
+    ports:
+      - "8000:8000"
+      - "35729:35729"
+    volumes:
+    - ./slides:/reveal/docs/slides
+    - ./images:/reveal/images
+    - ./resources:/resources
+    environment:
+        TITLE: "${TITLE}"
+        THEME_CSS: "${THEME}"
+  web:
+    image: "cloudogu/reveal.js"
+    ports:
+      - "8080:8080"
+    volumes:
+    - ./slides:/reveal/docs/slides
+    - ./images:/reveal/images
+    - ./resources:/resources
+    environment:
+        TITLE: "${TITLE}"
+        THEME_CSS: "${THEME}"
